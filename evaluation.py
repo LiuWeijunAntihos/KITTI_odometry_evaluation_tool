@@ -255,9 +255,12 @@ class kittiOdomEval():
                             color=color, label=label, alpha=alpha)
                 axarr[i].set_ylabel(ylabels[i])
                 axarr[i].legend(loc="upper right", frameon=True)
+                axarr[i].grid()
+                axarr[i].set_ylim([-10, 10])
             axarr[2].set_xlabel(xlabel)
             if title:
-                axarr[0].set_title('PRY')           
+                axarr[0].set_title('PRY') 
+                         
 
         fig_rpy, axarr_rpy = plt.subplots(3, sharex="col", figsize=tuple([20, 10]))
 
@@ -271,7 +274,25 @@ class kittiOdomEval():
         plt.savefig(plot_path_dir +  "/" + name + ".png", bbox_inches='tight', pad_inches=0.1)
         pdf = matplotlib.backends.backend_pdf.PdfPages(plot_path_dir +  "/" + name + ".pdf")        
         fig_rpy.tight_layout()
-        pdf.savefig(fig_rpy)       
+        pdf.savefig(fig_rpy)    
+
+        
+        fig_rpy, axarr_rpy = plt.subplots(3, sharex="col", figsize=tuple([20, 10]))
+
+        pred_rpy = np.array([tr.euler_from_matrix(p, axes=axes) for _,p in poses_pred.items()])
+        # traj_rpy(axarr_rpy, pred_rpy, '-', 'b', title='RPY', label='Ours', alpha=1.0)
+        if poses_ref:
+            ref_rpy = np.array([tr.euler_from_matrix(p, axes=axes) for _,p in poses_ref.items()])
+            traj_rpy(axarr_rpy, ref_rpy - pred_rpy, '-', 'g', label='Diff', alpha=1.0)
+
+        name = "{}_rpy".format(seq)
+        plt.savefig(plot_path_dir +  "/" + name + "_diff.png", bbox_inches='tight', pad_inches=0.1)
+        pdf = matplotlib.backends.backend_pdf.PdfPages(plot_path_dir +  "/" + name + "_diff.pdf")        
+        fig_rpy.tight_layout()
+        pdf.savefig(fig_rpy)    
+
+
+   
         # plt.show()
         pdf.close()
 
